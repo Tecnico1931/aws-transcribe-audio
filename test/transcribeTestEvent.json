@@ -1,0 +1,38 @@
+{
+    "Records": [
+        {
+            "eventVersion": "2.0",
+            "eventSource": "aws:s3",
+            "awsRegion": "us-east-1",
+            "eventTime": "2018-08-21T17:07:03.900Z",
+            "eventName": "ObjectCreated:Put",
+            "userIdentity": {
+                "principalId": "A2O8NTJOODN06W"
+            },
+            "requestParameters": {
+                "sourceIPAddress": "196.52.2.32"
+            },
+            "responseElements": {
+                "x-amz-request-id": "87D092F2CE853E36",
+                "x-amz-id-2": "Cope0loMTSWe/AsaN4nFLL7100bzjnWX7Ea+3OuUyv5Jomj1FAkplFTfajsoClzA+IUqGkYpzDY="
+            },
+            "s3": {
+                "s3SchemaVersion": "1.0",
+                "configurationId": "NotifyTranscribeMp3",
+                "bucket": {
+                    "name": "test-bucket-olga",
+                    "ownerIdentity": {
+                        "principalId": "A2O8NTJOODN06W"
+                    },
+                    "arn": "arn:aws:s3:::test-bucket-olga"
+                },
+                "object": {
+                    "key": "machine-gun-funk.mp3",
+                    "size": 4176291,
+                    "eTag": "ff0e96c0415de99453d75d58eb46b75e",
+                    "sequencer": "005B7C46B5B6AA8DDE"
+                }
+            }
+        }
+    ]
+}

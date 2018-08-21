@@ -1,0 +1,10 @@
+#!/bin/bash
+source ./credentials
+source ./climethods
+
+deleteFunction
+detachPolicy
+deleteRole
+deletePolicy
+
+rm *.zip

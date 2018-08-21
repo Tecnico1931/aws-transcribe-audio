@@ -1,0 +1,8 @@
+#misc
+.DS_Store
+*.swp
+*.zip
+
+#development
+credentials
+todo

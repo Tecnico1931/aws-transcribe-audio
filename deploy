@@ -1,0 +1,10 @@
+#!/bin/bash
+source ./credentials
+source ./climethods
+
+createRole
+createPolicy
+attachPolicy
+createFunction
+addPermission
+createNotification
