@@ -2,9 +2,10 @@
 source ./credentials
 source ./climethods
 
-deleteFunction
+deleteTranscriptFunction
+deleteExtractFunction
 detachPolicy
 deleteRole
 deletePolicy
 
-rm *.zip
+rm -rf build

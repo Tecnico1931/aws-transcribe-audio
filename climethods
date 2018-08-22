@@ -3,79 +3,105 @@
 # Build functions
 createRole() {
     aws iam create-role \
-        --role-name $TRANSCRIBE_ROLE_NAME \
-        --assume-role-policy-document file://policies/assumeRolePolicy.json \
+        --role-name "${TRANSCRIBE_ROLE_NAME}" \
+        --assume-role-policy-document "file://policies/assumeRolePolicy.json" \
         --description "Role managing audio transcription and notification service"
 }
 
 createPolicy() {
     aws iam create-policy \
-        --policy-name $TRANSCRIBE_POLICY_NAME \
-        --policy-document file://policies/transcribeAudioPolicy.json \
+        --policy-name "${TRANSCRIBE_POLICY_NAME}" \
+        --policy-document "file://policies/transcribeAudioPolicy.json" \
         --description "Grants access Full Access to Transcribe, S3, SES, and Write Only to CloudWatch Logs"
 }
 
 attachPolicy() {
     aws iam attach-role-policy \
-        --role-name $TRANSCRIBE_ROLE_NAME \
-        --policy-arn $TRANSCRIBE_POLICY_ARN
+        --role-name "${TRANSCRIBE_ROLE_NAME}" \
+        --policy-arn "${TRANSCRIBE_POLICY_ARN}"
 }
 
-createFunction() {
-    zip $TRANSCRIBE_LAMBDA_NAME.zip $TRANSCRIBE_LAMBDA_NAME.js && \
+createTranscribeFunction() {
+    zip "build/${TRANSCRIBE_LAMBDA_NAME.zip}" "${TRANSCRIBE_LAMBDA_NAME.js}"
     aws lambda create-function \
-        --function-name $TRANSCRIBE_LAMBDA_NAME \
+        --function-name "${TRANSCRIBE_LAMBDA_NAME}" \
         --runtime "nodejs8.10" \
-        --role $TRANSCRIBE_ROLE_ARN \
-        --environment "Variables={TRANSCRIPT_DESTINATION_EMAIL=$TRANSCRIPT_DESTINATION_EMAIL,TRANSCRIPT_DESTINATION_S3BUCKET_NAME=$TRANSCRIPT_DESTINATION_S3BUCKET_NAME}" \
+        --role "${TRANSCRIBE_ROLE_ARN}" \
+        --environment "Variables={TRANSCRIPT_DESTINATION_EMAIL=${TRANSCRIPT_DESTINATION_EMAIL},TRANSCRIPT_DESTINATION_S3BUCKET_NAME=${TRANSCRIPT_DESTINATION_S3BUCKET_NAME}}" \
         --handler "transcribeAudio.transcribe" \
         --timeout 300 \
         --memory-size 512 \
-        --zip-file fileb://$TRANSCRIBE_LAMBDA_NAME.zip \
+        --zip-file "fileb://build/${TRANSCRIBE_LAMBDA_NAME}.zip" \
         --description "transcribe audio then save and email resulting transcription."
 }
 
-updateFunctionCode() {
-    zip $TRANSCRIBE_LAMBDA_NAME.zip $TRANSCRIBE_LAMBDA_NAME.js && \
+createExtractFunction() {
+    zip "build/${EXTRACT_LAMBDA_NAME.zip}" "${EXTRACT_LAMBDA_NAME.js}"
+    aws lambda create-function \
+        --function-name "${EXTRACT_LAMBDA_NAME}" \
+        --runtime "nodejs8.10" \
+        --role "${TRANSCRIBE_ROLE_ARN}" \
+        --environment "Variables={TRANSCRIPT_DESTINATION_EMAIL=${TRANSCRIPT_DESTINATION_EMAIL},TRANSCRIPT_DESTINATION_S3BUCKET_NAME=${TRANSCRIPT_DESTINATION_S3BUCKET_NAME}}" \
+        --handler "extractTrascript.parseJSON" \
+        --timeout 300 \
+        --memory-size 512 \
+        --zip-file "fileb://build/${EXTRACT_LAMBDA_NAME}.zip" \
+        --description "transcribe audio then save and email resulting transcription."
+}
+
+updateTranscriptFunction() {
+    zip "build/${TRANSCRIBE_LAMBDA_NAME}.zip" "${TRANSCRIBE_LAMBDA_NAME}.js"
     aws lambda update-function-code \
-        --function-name $TRANSCRIBE_LAMBDA_NAME \
-        --zip-file fileb://$TRANSCRIBE_LAMBDA_NAME.zip
+        --function-name "${TRANSCRIBE_LAMBDA_NAME}" \
+        --zip-file "fileb://build/${TRANSCRIBE_LAMBDA_NAME}.zip"
+}
+
+updateExtractFunction() {
+    zip "build/${EXTRACT_LAMBDA_NAME}.zip" "${EXTRACT_LAMBDA_NAME}.js"
+    aws lambda update-function-code \
+        --function-name "${EXTRACT_LAMBDA_NAME}" \
+        --zip-file "fileb://build/${EXTRACT_LAMBDA_NAME}.zip"
 }
 
 addPermission() {
     aws lambda add-permission \
-        --function-name $TRANSCRIBE_LAMBDA_ARN \
+        --function-name "${TRANSCRIBE_LAMBDA_ARN}" \
         --statement-id "invoke-by-s3-permission" \
         --action "lambda:InvokeFunction" \
         --principal "s3.amazonaws.com" \
-        --source-arn $AUDIO_SOURCE_S3BUCKET_ARN \
-        --source-account $AWS_ACCOUNT_ID
+        --source-arn "${AUDIO_SOURCE_S3BUCKET_ARN}" \
+        --source-account "${AWS_ACCOUNT_ID}"
 }
 
 createNotification() {
     aws s3api put-bucket-notification-configuration \
-        --bucket $AUDIO_SOURCE_S3BUCKET_NAME \
-        --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"Id\": \"NotifyTranscribeMp3\", \"LambdaFunctionArn\": \"$TRANSCRIBE_LAMBDA_ARN\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".mp3\"}]}}},{\"Id\": \"NotifyTranscribeMp4\", \"LambdaFunctionArn\": \"$TRANSCRIBE_LAMBDA_ARN\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".mp4\"}]}}},{\"Id\": \"NotifyTranscribeWav\", \"LambdaFunctionArn\": \"$TRANSCRIBE_LAMBDA_ARN\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".wav\"}]}}},{\"Id\": \"NotifyTranscribeFlac\", \"LambdaFunctionArn\": \"$TRANSCRIBE_LAMBDA_ARN\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".flac\"}]}}}]}"
+        --bucket "${AUDIO_SOURCE_S3BUCKET_NAME}" \
+        --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"Id\": \"NotifyTranscribeMp3\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".mp3\"}]}}},{\"Id\": \"NotifyTranscribeMp4\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".mp4\"}]}}},{\"Id\": \"NotifyTranscribeWav\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".wav\"}]}}},{\"Id\": \"NotifyTranscribeFlac\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".flac\"}]}}}]}"
 }
 
 # Teardown functions
-deleteFunction() {
+deleteTranscriptFunction() {
     aws lambda delete-function \
-        --function-name $TRANSCRIBE_LAMBDA_ARN
+        --function-name "${TRANSCRIBE_LAMBDA_ARN}"
+}
+
+deleteExtractFunction() {
+    aws lambda delete-function \
+        --function-name "${EXTRACT_LAMBDA_ARN}"
 }
 
 detachPolicy() {
     aws iam detach-role-policy \
-        --role-name $TRANSCRIBE_ROLE_NAME \
-        --policy-arn $TRANSCRIBE_POLICY_ARN
+        --role-name "${TRANSCRIBE_ROLE_NAME}" \
+        --policy-arn "${TRANSCRIBE_POLICY_ARN}"
 }
 
 deleteRole() {
     aws iam delete-role \
-        --role-name $TRANSCRIBE_ROLE_NAME
+        --role-name "${TRANSCRIBE_ROLE_NAME}"
 }
 
 deletePolicy() {
     aws iam delete-policy \
-        --policy-arn $TRANSCRIBE_POLICY_ARN
+        --policy-arn "${TRANSCRIBE_POLICY_ARN}"
 }

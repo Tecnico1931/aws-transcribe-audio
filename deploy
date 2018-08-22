@@ -5,6 +5,7 @@ source ./climethods
 createRole
 createPolicy
 attachPolicy
-createFunction
+createTranscribeFunction
+createExtractFunction
 addPermission
 createNotification
