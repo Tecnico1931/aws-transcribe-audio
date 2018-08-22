@@ -63,7 +63,7 @@ updateExtractFunction() {
         --zip-file "fileb://build/${EXTRACT_LAMBDA_NAME}.zip"
 }
 
-addPermission() {
+addTranscriptPermission() {
     aws lambda add-permission \
         --function-name "${TRANSCRIBE_LAMBDA_ARN}" \
         --statement-id "invoke-by-s3-permission" \
@@ -73,7 +73,23 @@ addPermission() {
         --source-account "${AWS_ACCOUNT_ID}"
 }
 
-createNotification() {
+addExtractPermission() {
+    aws lambda add-permission \
+        --function-name "${EXTRACT_LAMBDA_ARN}" \
+        --statement-id "invoke-by-s3-permission" \
+        --action "lambda:InvokeFunction" \
+        --principal "s3.amazonaws.com" \
+        --source-arn "${AUDIO_SOURCE_S3BUCKET_ARN}" \
+        --source-account "${AWS_ACCOUNT_ID}"
+}
+
+createExtractNotification() {
+    aws s3api put-bucket-notification-configuration \
+        --bucket "${AUDIO_SOURCE_S3BUCKET_NAME}" \
+        --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"Id\": \"NotifyExtractJSON\", \"LambdaFunctionArn\": \"${EXTRACT_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".json\"}]}}}]}"
+}
+
+createTranscriptNotification() {
     aws s3api put-bucket-notification-configuration \
         --bucket "${AUDIO_SOURCE_S3BUCKET_NAME}" \
         --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"Id\": \"NotifyTranscribeMp3\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".mp3\"}]}}},{\"Id\": \"NotifyTranscribeMp4\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".mp4\"}]}}},{\"Id\": \"NotifyTranscribeWav\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".wav\"}]}}},{\"Id\": \"NotifyTranscribeFlac\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".flac\"}]}}}]}"

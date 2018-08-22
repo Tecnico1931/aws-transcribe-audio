@@ -7,5 +7,7 @@ createPolicy
 attachPolicy
 createTranscribeFunction
 createExtractFunction
-addPermission
-createNotification
+addTranscriptPermission
+addExtractPermission
+createTranscriptNotification
+createExtractNotification
