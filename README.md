@@ -5,6 +5,7 @@ Automatically transcribe audio files added to an AWS S3 bucket and receive notif
 
 + [Description](./README.md#description)
 + [Deployment Steps (Installation and use of software)](./README.md#deployment-steps)
+  0. [Clone Repository](./README.md#)
   0. [Installing the AWS CLI SDK](./README.md#)
   1. [Creating an IAM User](./README.md#)
   2. [Creating an S3 Bucket](./README.md#)
@@ -37,19 +38,50 @@ The "transcribeAudio" function initiates the AWS Transcribe service whenever an 
 ## Deployment Steps
 These deployment steps install AWS's command line interface, specify permissions for accessing Amazon services, and create functions and notifications.
 
+### 0. Cloning Repository
+
 ### 0. Installing the AWS CLI SDK
-Quick Install (requires "pip", a Python package manager):
+**Quick Install:** (requires "pip", a Python package manager)
 ```bash
 pip install awscli --upgrade --user
 ```
 
 **Installation Guide (pip):** https://docs.aws.amazon.com/cli/latest/userguide/installing.html
+
 **Installation Guide (MacOS):** https://docs.aws.amazon.com/cli/latest/userguide/cli-install-macos.html#awscli-install-osx-path
+
 **Installation Guide (Linux):** https://docs.aws.amazon.com/cli/latest/userguide/awscli-install-linux.html#awscli-install-linux-path
+
 **Installation Guide (Windows):** https://docs.aws.amazon.com/cli/latest/userguide/awscli-install-windows.html#awscli-install-windows-path
 
 ### 1. Creating an IAM User
+This user will manage our use of AWS Services.
+
+1. Navigate to the IAM page in AWS Console: https://console.aws.amazon.com/iam/
+2. Click the "Add user" button.
+3. Fill in "User name" with "scribe" and check the box enabling "Programmatic access"
+4. Click the "Next: permissions" button.
+5. Add user to AdministratorAccessGroup by checking its box.
+6. Click the "Next: review" button. Review your permissions to make sure the user can access S3, Lambda, Transcribe, SNS, and CloudWatch.
+7. Click the "Create user" button. You will be brought to the Success page.
+8. BE SURE TO RECORD THE ACCESS KEY ID AND SECRET ACCESS KEY PROVIDED ON THIS PAGE. Download the .csv containing the credentials or retrieve and write down the credentials listed at the bottom on the Success page.
+
+
+To perform these steps programmatically and with stricter permissions, see below.
+```bash
+aws iam create-user --user-name scribe 
+aws iam create-access-key --user-name scribe
+aws iam create-group --group-name ScribeGroup
+aws iam create-policy --policy-name "ScribePolicy" --policy-document "file://policies/transcribeAudioPolicy.json"
+aws iam attach-group-policy --group-name ScribeGroup --policy-arn "arn:aws:iam::${AWS_ACCOUNT_ID}:policy/ScribePolicy"
+aws iam add-user-to-group --group-name ScribeGroup --user-name scribe
+```
+
 ### 2. Creating an S3 Bucket
+This bucket will be the destination for both raw and formatted transcripts created by AWS Transcribe.
+
+1. 
+
 ### 3. Collecting Account Credentials
 ### 4. Running Deployment Script
 ### 5. Subscribing to Email Notifications
