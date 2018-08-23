@@ -17,6 +17,7 @@ exports.parseJSON = function (event) {
     const processed_file = filename.replace(/_[^_]*(?![^_]*_)/ig, "");
 
     const destination_bucket = process.env.TRANSCRIPT_DESTINATION_S3BUCKET_NAME;
+    const destination_bucket_url = `s3.console.aws.amazon.com/s3/buckets/${destination_bucket}`;
     const textfilepath = `transcripts/${shortname}.txt`;
     const htmlfilepath = `transcripts/${shortname}.html`;
 
@@ -33,14 +34,14 @@ exports.parseJSON = function (event) {
             <html>
                 <body>
                     <h1>Transcript for <span style="text-decoration:underline">${processed_file}</span></h1>
-                    <p>${transcript}</p>
-                    <p>Processed on: ${processed_on}</p>
+                    <p><em>Processed on: ${processed_on}</em></p>
                     <p>
-                        <div><em>S3 bucket containing transcription results: ${destination_bucket}</em></div>
-                        <div><em>Path to JSON:</em> ${filepath}</div>
-                        <div><em>Path to text:</em> ${textfilepath}</div>
-                        <div><em>Path to HTML:</em> ${htmlfilepath}</div>
+                        <div><strong><a href="${destination_bucket_url}">S3 bucket containing transcription results: ${destination_bucket} (Link to bucket)</a></strong></div>
+                        <div><strong>Path to JSON:</strong> ${filepath}</div>
+                        <div><strong>Path to text:</strong> ${textfilepath}</div>
+                        <div><strong>Path to HTML:</strong> ${htmlfilepath}</div>
                     </p>
+                    <p>${transcript}</p>
                 </body>
             </html>
         `;
