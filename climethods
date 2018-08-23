@@ -21,8 +21,20 @@ attachPolicy() {
         --policy-arn "${TRANSCRIBE_POLICY_ARN}"
 }
 
+createSnsTopic() {
+    aws sns create-topic \
+        --name "${SNS_TOPIC_NAME}"
+}
+
+subscribeSnsTopic() {
+    aws sns subscribe \
+        --topic-arn "${SNS_TOPIC_ARN}" \
+        --protocol "email" \
+        --notification-endpoint "${TRANSCRIPT_DESTINATION_EMAIL}"
+}
+
 createTranscribeFunction() {
-    zip "build/${TRANSCRIBE_LAMBDA_NAME.zip}" "${TRANSCRIBE_LAMBDA_NAME.js}"
+    zip "build/${TRANSCRIBE_LAMBDA_NAME}.zip" "${TRANSCRIBE_LAMBDA_NAME}.js"
     aws lambda create-function \
         --function-name "${TRANSCRIBE_LAMBDA_NAME}" \
         --runtime "nodejs8.10" \
@@ -36,13 +48,13 @@ createTranscribeFunction() {
 }
 
 createExtractFunction() {
-    zip "build/${EXTRACT_LAMBDA_NAME.zip}" "${EXTRACT_LAMBDA_NAME.js}"
+    zip "build/${EXTRACT_LAMBDA_NAME}.zip" "${EXTRACT_LAMBDA_NAME}.js"
     aws lambda create-function \
         --function-name "${EXTRACT_LAMBDA_NAME}" \
         --runtime "nodejs8.10" \
         --role "${TRANSCRIBE_ROLE_ARN}" \
-        --environment "Variables={TRANSCRIPT_DESTINATION_EMAIL=${TRANSCRIPT_DESTINATION_EMAIL},TRANSCRIPT_DESTINATION_S3BUCKET_NAME=${TRANSCRIPT_DESTINATION_S3BUCKET_NAME}}" \
-        --handler "extractTrascript.parseJSON" \
+        --environment "Variables={TRANSCRIPT_DESTINATION_EMAIL=${TRANSCRIPT_DESTINATION_EMAIL},TRANSCRIPT_DESTINATION_S3BUCKET_NAME=${TRANSCRIPT_DESTINATION_S3BUCKET_NAME},SNS_TOPIC_ARN=${SNS_TOPIC_ARN}}" \
+        --handler "extractTranscript.parseJSON" \
         --timeout 300 \
         --memory-size 512 \
         --zip-file "fileb://build/${EXTRACT_LAMBDA_NAME}.zip" \
@@ -85,7 +97,7 @@ addExtractPermission() {
 
 createExtractNotification() {
     aws s3api put-bucket-notification-configuration \
-        --bucket "${AUDIO_SOURCE_S3BUCKET_NAME}" \
+        --bucket "${TRANSCRIPT_DESTINATION_S3BUCKET_NAME}" \
         --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"Id\": \"NotifyExtractJSON\", \"LambdaFunctionArn\": \"${EXTRACT_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".json\"}]}}}]}"
 }
 
@@ -104,6 +116,11 @@ deleteTranscriptFunction() {
 deleteExtractFunction() {
     aws lambda delete-function \
         --function-name "${EXTRACT_LAMBDA_ARN}"
+}
+
+deleteTopic() {
+    aws sns delete-topic \
+        --topic-arn "${SNS_TOPIC_ARN}"
 }
 
 detachPolicy() {

@@ -2,10 +2,17 @@
 source ./credentials
 source ./climethods
 
+echo "deleting transcribeAudio Lambda function"
 deleteTranscriptFunction
+echo "deleting extractTranscript Lambda function"
 deleteExtractFunction
+echo "deleting SNS Topic"
+deleteTopic
+echo "detaching IAM Policy from Role"
 detachPolicy
+echo "deleting IAM Role for Lambda function"
 deleteRole
+echo "deleting IAM Policy"
 deletePolicy
 
-rm -rf build
+rm -rf build/*

@@ -2,12 +2,25 @@
 source ./credentials
 source ./climethods
 
+echo "creating IAM Role that allows Lambda to execute functions"
 createRole
+echo "creating IAM Policy defining access to AWS services"
 createPolicy
+echo "attaching Policy to Role"
 attachPolicy
+echo "creating SNS Topic for Transcribe service"
+createSnsTopic
+echo "subscribing ${TRANSCRIPT_DESTINATION_EMAIL} to SNS Topic"
+subscribeSnsTopic
+echo "creating transcribeAudio Lambda function"
 createTranscribeFunction
+echo "creating extractTranscript Lambda function"
 createExtractFunction
+echo "allowing transcribeAudio to be invoked by S3 event"
 addTranscriptPermission
+echo "allowing extractTranscript to be invoked by S3 event"
 addExtractPermission
+echo "subscribing transcribeAudio to audio (mp3, mp4, wav, flac) events in ${AUDIO_SOURCE_S3BUCKET_NAME}"
 createTranscriptNotification
+echo "subscribing extractTranscript to JSON events in ${TRANSCRIPT_DESTINATION_S3BUCKET_NAME}"
 createExtractNotification
