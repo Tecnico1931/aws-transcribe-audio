@@ -61,20 +61,6 @@ createExtractFunction() {
         --description "transcribe audio then save and email resulting transcription."
 }
 
-updateTranscriptFunction() {
-    zip "build/${TRANSCRIBE_LAMBDA_NAME}.zip" "${TRANSCRIBE_LAMBDA_NAME}.js"
-    aws lambda update-function-code \
-        --function-name "${TRANSCRIBE_LAMBDA_NAME}" \
-        --zip-file "fileb://build/${TRANSCRIBE_LAMBDA_NAME}.zip"
-}
-
-updateExtractFunction() {
-    zip "build/${EXTRACT_LAMBDA_NAME}.zip" "${EXTRACT_LAMBDA_NAME}.js"
-    aws lambda update-function-code \
-        --function-name "${EXTRACT_LAMBDA_NAME}" \
-        --zip-file "fileb://build/${EXTRACT_LAMBDA_NAME}.zip"
-}
-
 addTranscriptPermission() {
     aws lambda add-permission \
         --function-name "${TRANSCRIBE_LAMBDA_ARN}" \
@@ -91,20 +77,20 @@ addExtractPermission() {
         --statement-id "invoke-by-s3-permission" \
         --action "lambda:InvokeFunction" \
         --principal "s3.amazonaws.com" \
-        --source-arn "${AUDIO_SOURCE_S3BUCKET_ARN}" \
+        --source-arn "${TRANSCRIPT_DESTINATION_S3BUCKET_ARN}" \
         --source-account "${AWS_ACCOUNT_ID}"
 }
 
 createExtractNotification() {
     aws s3api put-bucket-notification-configuration \
         --bucket "${TRANSCRIPT_DESTINATION_S3BUCKET_NAME}" \
-        --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"Id\": \"NotifyExtractJSON\", \"LambdaFunctionArn\": \"${EXTRACT_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".json\"}]}}}]}"
+        --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"Id\": \"NotifyExtractJSON\", \"LambdaFunctionArn\": \"${EXTRACT_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\", \"s3:ObjectCreated:CompleteMultipartUpload\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".json\"}]}}}]}"
 }
 
 createTranscriptNotification() {
     aws s3api put-bucket-notification-configuration \
         --bucket "${AUDIO_SOURCE_S3BUCKET_NAME}" \
-        --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"Id\": \"NotifyTranscribeMp3\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".mp3\"}]}}},{\"Id\": \"NotifyTranscribeMp4\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".mp4\"}]}}},{\"Id\": \"NotifyTranscribeWav\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".wav\"}]}}},{\"Id\": \"NotifyTranscribeFlac\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".flac\"}]}}}]}"
+        --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"Id\": \"NotifyTranscribeMp3\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\", \"s3:ObjectCreated:CompleteMultipartUpload\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".mp3\"}]}}},{\"Id\": \"NotifyTranscribeMp4\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\", \"s3:ObjectCreated:CompleteMultipartUpload\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".mp4\"}]}}},{\"Id\": \"NotifyTranscribeWav\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\", \"s3:ObjectCreated:CompleteMultipartUpload\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".wav\"}]}}},{\"Id\": \"NotifyTranscribeFlac\", \"LambdaFunctionArn\": \"${TRANSCRIBE_LAMBDA_ARN}\", \"Events\": [\"s3:ObjectCreated:Put\", \"s3:ObjectCreated:Post\", \"s3:ObjectCreated:CompleteMultipartUpload\"], \"Filter\": { \"Key\": { \"FilterRules\": [{ \"Name\": \"suffix\", \"Value\": \".flac\"}]}}}]}"
 }
 
 # Teardown functions
@@ -137,4 +123,38 @@ deleteRole() {
 deletePolicy() {
     aws iam delete-policy \
         --policy-arn "${TRANSCRIBE_POLICY_ARN}"
+}
+
+# Development/status functions
+updateTranscriptFunction() {
+    zip "build/${TRANSCRIBE_LAMBDA_NAME}.zip" "${TRANSCRIBE_LAMBDA_NAME}.js"
+    aws lambda update-function-code \
+        --function-name "${TRANSCRIBE_LAMBDA_NAME}" \
+        --zip-file "fileb://build/${TRANSCRIBE_LAMBDA_NAME}.zip"
+}
+
+updateExtractFunction() {
+    zip "build/${EXTRACT_LAMBDA_NAME}.zip" "${EXTRACT_LAMBDA_NAME}.js"
+    aws lambda update-function-code \
+        --function-name "${EXTRACT_LAMBDA_NAME}" \
+        --zip-file "fileb://build/${EXTRACT_LAMBDA_NAME}.zip"
+}
+
+listAllTranscriptionJobs() {
+    aws transcribe list-transcription-jobs
+}
+
+listRunningTranscriptionJobs() {
+    aws transcribe list-transcription-jobs \
+        --status "IN_PROGRESS"
+}
+
+listCompletedTranscriptionJobs() {
+    aws transcribe list-transcription-jobs \
+        --status "COMPLETED"
+}
+
+listFailedTranscriptionJobs() {
+    aws transcribe list-transcription-jobs \
+        --status "FAILED"
 }
