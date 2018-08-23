@@ -3,15 +3,15 @@ Automatically transcribe audio files added to an AWS S3 bucket and receive notif
 
 ## Table of Contents:
 
-1. Description
-2. Deployment Steps (Installation and use of software)
++ Description
++ Deployment Steps (Installation and use of software)
   1. Creating an IAM User
   2. Creating an S3 Bucket
   3. Collecting Account Credentials
   4. Running Deployment Script
   5. Cleaning/Reverting Account Changes 
-3. Tips to Monitor Functions
-4. Documentation for Repository Files
++ Tips to Monitor Functions
++ Documentation for Repository Files
   + credentials
   + climenthods
   + build
