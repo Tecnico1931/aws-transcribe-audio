@@ -5,20 +5,20 @@ Automatically transcribe audio files added to an AWS S3 bucket and receive notif
 
 + Description
 + Deployment Steps (Installation and use of software)
-..1. Creating an IAM User
-..2. Creating an S3 Bucket
-..3. Collecting Account Credentials
-..4. Running Deployment Script
-..5. Cleaning/Reverting Account Changes 
+  1. Creating an IAM User
+  2. Creating an S3 Bucket
+  3. Collecting Account Credentials
+  4. Running Deployment Script
+  5. Cleaning/Reverting Account Changes 
 + Tips to Monitor Functions
 + Documentation for Repository Files
-..+ credentials
-..+ climenthods
-..+ build
-..+ clean 
-..+ policies
-..+ transcribeAudio.js
-..+ extractTranscript.js
+  + credentials
+  + climenthods
+  + build
+  + clean 
+  + policies
+  + transcribeAudio.js
+  + extractTranscript.js
 
 ## Description
 This software package is a collection of command line tools (cli tools) that create/manage roles, policies, and permissions for AWS Lambda functions. These functions may be used to easily start and format results from the AWS Transcribe service.  
