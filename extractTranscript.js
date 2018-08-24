@@ -47,7 +47,7 @@ Path to text: ${textfilepath}
 ${transcript}`;
 
         S3.putObject({
-            Body: transcript,
+            Body: email,
             Bucket: destination_bucket,
             Key: `transcripts/${directory}/${shortname}.txt`,
             ContentType: 'text/plain'
