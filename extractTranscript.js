@@ -12,12 +12,16 @@ exports.parseJSON = function (event) {
     directory = directory.join('/');
     let shortname = filename.split('.');
     const extension = shortname.pop().toLowerCase();
-    shortname = shortname.join('');
+    shortname = shortname.join('.');
+
     const bucket = event.Records[0].s3.bucket.name;
     const processed_on = event.Records[0].eventTime;
     const processed_file = shortname;
+
     shortname = shortname.split('.');
-    shortname.pop();
+    if (shortname.length > 1) {
+        shortname.pop();
+    }
     shortname = shortname.join('');
 
     const destination_bucket = process.env.TRANSCRIPT_DESTINATION_S3BUCKET_NAME;
