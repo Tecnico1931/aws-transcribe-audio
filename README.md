@@ -122,8 +122,8 @@ Running the "clean" script will remove users, roles, policies, Lambda functions,
 ```
 
 ## Tips to Monitor Functions
-#### Add cloudwatch alarms for billing.
-CloudWatch has powerful tools to monitor billing and resource usage. You can also setting up "Rules" that will trigger every time an AWS Transcribe job finishes, allowing you closer usage monitoring.
+#### Add cloudwatch alarms for billing and enable logging.
+CloudWatch has tools to monitor billing and resource usage. In the console, specify an S3 bucket to store your logs. You can also set up "Rules" that will trigger every time an AWS Transcribe job finishes, allowing you closer usage monitoring.
   + [Link to monitoring charges](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/monitor-charges.html)
   + [AWS Transcribe pricing](https://aws.amazon.com/transcribe/pricing/)
   + [Monitor Amazon Transcribe applications with AWS CloudTrail and CloudWatch Events](https://aws.amazon.com/blogs/machine-learning/monitor-amazon-transcribe-applications-with-aws-cloudtrail-and-amazon-cloudwatch-events/)

@@ -15,12 +15,11 @@ exports.transcribe = async event => {
 
     const transcriptBucket = process.env.TRANSCRIPT_DESTINATION_S3BUCKET_NAME;
     const transcriptEmail = process.env.TRANSCRIPT_DESTINATION_EMAIL;
-    const date = new Date();
-    const transcriptName = [filepath, date.toJSON()]
-        .join("_")
-        .replace(/[^0-9a-zA-Z._-]+/g, "-");
+    const transcriptName = filepath
+        .replace(/\//g, "...")
+        .replace(/[^0-9a-zA-Z._-]+/g, "");
 
-    const job_param = {
+    const param = {
         LanguageCode: "en-US",
         Media: {
             MediaFileUri: sourceUri,
@@ -33,9 +32,9 @@ exports.transcribe = async event => {
         }
     };
 
-    console.log(JSON.stringify(job_param));
+    console.log(JSON.stringify(param));
 
-    return Scribe.startTranscriptionJob(job_param).promise()
+    return Scribe.startTranscriptionJob(param).promise()
         .then(data => {
             console.log(JSON.stringify(data));
         })
