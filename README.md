@@ -5,13 +5,13 @@ Automatically transcribe audio files added to an AWS S3 bucket and receive notif
 
 + [Description](./README.md#description)
 + [Deployment Steps (Installation and use of software)](./README.md#deployment-steps)
-  0. [Installing the AWS CLI SDK and copying the git repository](./README.md#)
-  1. [Creating an IAM User](./README.md#)
-  2. [Creating an S3 Bucket](./README.md#)
-  3. [Collecting Account Credentials](./README.md#)
-  4. [Running Deployment Script](./README.md#)
-  5. [Subscribing to Email Notificaitons](./README.md#)
-  6. [Cleaning/Reverting Account Changes ](./README.md#)
+  1. [Installing the AWS CLI SDK and copying the git repository](./README.md#1-installing-the-aws-cli-sdk-and-copying-the-git-repository)
+  2. [Creating an IAM User](./README.md#2-creating-an-iam-user)
+  3. [Creating an S3 Bucket](./README.md#3-creating-an-s3-bucket)
+  4. [Collecting Account Credentials](./README.md#4-collecting-account-credentials)
+  5. [Running Deployment Script](./README.md#5-running-deployment-script)
+  6. [Subscribing to Email Notificaitons](./README.md#6-subscribing-to-email-notifications)
+  7. [Cleaning/Reverting Account Changes ](./README.md#7-cleaningreverting-account-changes)
 + [Tips to Monitor Functions](./README.md#tips-to-monitor-functions)
 
 ## Description
