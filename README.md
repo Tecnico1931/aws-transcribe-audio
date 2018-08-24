@@ -5,8 +5,7 @@ Automatically transcribe audio files added to an AWS S3 bucket and receive notif
 
 + [Description](./README.md#description)
 + [Deployment Steps (Installation and use of software)](./README.md#deployment-steps)
-  0. [Clone Repository](./README.md#)
-  0. [Installing the AWS CLI SDK](./README.md#)
+  0. [Installing the AWS CLI SDK and copying the git repository](./README.md#)
   1. [Creating an IAM User](./README.md#)
   2. [Creating an S3 Bucket](./README.md#)
   3. [Collecting Account Credentials](./README.md#)
@@ -14,14 +13,6 @@ Automatically transcribe audio files added to an AWS S3 bucket and receive notif
   5. [Subscribing to Email Notificaitons](./README.md#)
   6. [Cleaning/Reverting Account Changes ](./README.md#)
 + [Tips to Monitor Functions](./README.md#tips-to-monitor-functions)
-+ [Documentation for Repository Files](./README.md#documentation-for-repository-files)
-  + [credentials](./README.md#credentials)
-  + [climethods](./README.md#climethods)
-  + [build](./README.md#build)
-  + [clean ](./README.md#clean)
-  + [transcribeAudio.js](./README.md#transcribeaudiojs)
-  + [extractTranscript.js](./README.md#extracttranscriptjs)
-  + [policies/](./README.md#policies)
 
 ## Description
 This software package is a collection of command line tools (cli methods) that create/manage roles, policies, and permissions for AWS Lambda functions. These functions may be used to easily start and format results from the AWS Transcribe service. Use the "deploy" script to build the service on the specified AWS account. Use the "clean" script to remove the service from the account.
@@ -49,15 +40,15 @@ To copy the project files, clone this git respository.
 git clone https://github.com/couetilc/aws-transcribe-audio.git
 ```
 
-**Installation Guide (pip):** https://docs.aws.amazon.com/cli/latest/userguide/installing.html
+[Installation Guide (pip)](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
 
-**Installation Guide (MacOS):** https://docs.aws.amazon.com/cli/latest/userguide/cli-install-macos.html#awscli-install-osx-path
+[Installation Guide (MacOS)](https://docs.aws.amazon.com/cli/latest/userguide/cli-install-macos.html#awscli-install-osx-path)
 
-**Installation Guide (Linux):** https://docs.aws.amazon.com/cli/latest/userguide/awscli-install-linux.html#awscli-install-linux-path
+[Installation Guide (Linux)](https://docs.aws.amazon.com/cli/latest/userguide/awscli-install-linux.html#awscli-install-linux-path)
 
-**Installation Guide (Windows):** https://docs.aws.amazon.com/cli/latest/userguide/awscli-install-windows.html#awscli-install-windows-path
+[Installation Guide (Windows)](https://docs.aws.amazon.com/cli/latest/userguide/awscli-install-windows.html#awscli-install-windows-path)
 
-**Installation Guide (git):** https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+[Installation Guide (git)](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
 ### 2. Creating an IAM User
 This user will manage our use of AWS Services.
@@ -100,7 +91,7 @@ aws s3api create-bucket --bucket "transcript.results"
 ### 4. Collecting Account Credentials
 **DO NOT COMMIT CREDENTIALS TO PUBLIC SOURCE CONTROL**
 
-We will store account credentials needed for the AWS CLI SDK in the file "credentials" located in the projects root directory. Please copy the corresponding values below into the "credentials" file.
+We will store account credentials needed for the AWS CLI SDK in the file "credentials" located in the project's root directory. Please copy the corresponding values below into the "credentials" file.
 
 #### AWS Credential Configuration
 
@@ -117,7 +108,7 @@ We will store account credentials needed for the AWS CLI SDK in the file "creden
 ### 5. Running Deployment Script
 The deployment script creates a user, role, and policy for our Lambda functions before uploading the code, initializing notification events, and creating an SNS topic.
 
-Execute by running "./deploy".  You may need to run it twice if any errors occur, AWS is weird when you quickly make CLI requests.  I recommend those with patience to type each line of the "deploy" script into a terminal to avoid this problem.
+Execute by running "./deploy".  You may need to run it twice if any errors occur, AWS is weird when quickly making requests with the CLI.  I recommend those with patience to type each line of the "deploy" script into a terminal to avoid this problem.
 ```bash
 ./deploy
 ```
@@ -134,19 +125,22 @@ Running the "clean" script will remove users, roles, policies, Lambda functions,
 ```
 
 ## Tips to Monitor Functions
-+ Add cloudwatch alarms for billing.
-refer to https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/monitor-charges.html for monitoring charges.
-refer to https://aws.amazon.com/transcribe/pricing/ for AWS Transcribe priing.
-refer to https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/logging-using-cloudtrail.html for creating trails.
-+ Use checktranscriptionjob funcitons in climethods to monitor AWS Transcribe status.
-+ Update Lambda functions with update functions in climethods
-+ Don't add credentials to public source control
+#### Add cloudwatch alarms for billing.
+CloudWatch has powerful tools to monitor billing and resource usage. You can also setting up "Rules" that will trigger every time an AWS Transcribe job finishes, allowing you closer usage monitoring.
+  + [Link to monitoring charges](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/monitor-charges.html)
+  + [AWS Transcribe pricing](https://aws.amazon.com/transcribe/pricing/)
 
-## Documentation for Repository Files
-### credentials
-### climethods
-### deploy
-### clean
-### transcribeAudio.js
-### extractTranscript.js
-### policies/
+#### Use functions in climethods to monitor AWS Transcribe status.
+There are several functions in climethods to get the current state of your WS Transcribe jobs. They leverage the AWS CLI commands below.
+
+List All Transcription Jobs
+```bash
+aws transcribe list-transcription-jobs
+```
+
+List Running Transcription Jobs
+```bash
+aws transcribe list-transcription-jobs --status "IN_PROGRESS"
+```
+
+### Don't add credentials to public source control!
