@@ -26,7 +26,7 @@ exports.parseJSON = function (event) {
 
     const destination_bucket = process.env.TRANSCRIPT_DESTINATION_S3BUCKET_NAME;
     const destination_bucket_url = `s3.console.aws.amazon.com/s3/buckets/${destination_bucket}`;
-    const textfilepath = `transcripts/${shortname}.txt`;
+    const destination_filepath = `transcripts/${directory}/${shortname}.txt`;
 
     S3.getObject({
         Bucket: destination_bucket,
@@ -42,14 +42,14 @@ Processed on: ${processed_on}
 S3 bucket containing transcription results: ${destination_bucket}
 Link to bucket: ${destination_bucket_url}
 Path to JSON: ${filepath}
-Path to text: ${textfilepath}
+Path to text: ${destination_filepath}
 
 ${transcript}`;
 
         S3.putObject({
             Body: email,
             Bucket: destination_bucket,
-            Key: `transcripts/${directory}/${shortname}.txt`,
+            Key: destination_filepath,
             ContentType: 'text/plain'
         }).promise()
             .then(response => console.log(JSON.stringify(response)))
