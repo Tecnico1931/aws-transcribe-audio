@@ -40,15 +40,15 @@ To copy the project files, clone this git respository.
 git clone https://github.com/couetilc/aws-transcribe-audio.git
 ```
 
-[Installation Guide (pip)](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
+[pip installation guide (pip)](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
 
-[Installation Guide (MacOS)](https://docs.aws.amazon.com/cli/latest/userguide/cli-install-macos.html#awscli-install-osx-path)
+[git installation guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
-[Installation Guide (Linux)](https://docs.aws.amazon.com/cli/latest/userguide/awscli-install-linux.html#awscli-install-linux-path)
+[AWS CLI installation guide (MacOS)](https://docs.aws.amazon.com/cli/latest/userguide/cli-install-macos.html#awscli-install-osx-path)
 
-[Installation Guide (Windows)](https://docs.aws.amazon.com/cli/latest/userguide/awscli-install-windows.html#awscli-install-windows-path)
+[AWS CLI installation guide (Linux)](https://docs.aws.amazon.com/cli/latest/userguide/awscli-install-linux.html#awscli-install-linux-path)
 
-[Installation Guide (git)](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+[AWS CLI installation guide (Windows)](https://docs.aws.amazon.com/cli/latest/userguide/awscli-install-windows.html#awscli-install-windows-path)
 
 ### 2. Creating an IAM User
 This user will manage our use of AWS Services.
@@ -63,14 +63,11 @@ This user will manage our use of AWS Services.
 8. BE SURE TO RECORD THE ACCESS KEY ID AND SECRET ACCESS KEY PROVIDED ON THIS PAGE. Download the .csv containing the credentials or retrieve and write down the credentials listed at the bottom on the Success page.
 
 
-Using the AWS CLI (and opting for stricter permissions):
+Using the AWS CLI:
 ```bash
 aws iam create-user --user-name scribe 
 aws iam create-access-key --user-name scribe
-aws iam create-group --group-name ScribeGroup
-aws iam create-policy --policy-name "ScribePolicy" --policy-document "file://policies/transcribeAudioPolicy.json"
-aws iam attach-group-policy --group-name ScribeGroup --policy-arn "arn:aws:iam::${AWS_ACCOUNT_ID}:policy/ScribePolicy"
-aws iam add-user-to-group --group-name ScribeGroup --user-name scribe
+aws iam add-user-to-group --group-name Administrator --user-name scribe
 ```
 
 ### 3. Creating an S3 Bucket
@@ -78,7 +75,7 @@ This bucket will be the destination for both raw and formatted transcripts creat
 
 1. Navigate to the S3 page in AWS Console at https://console.aws.amazon.com/s3.
 2. Click on the "+ Create Bucket" button.
-3. At the "Name and region" section, fill in "Bucket name" and confirm AWS Region. Click "Next."
+3. At the "Name and region" section, fill in "Bucket name" and confirm AWS Region matches the region of the S3 Bucket containing audio. Click "Next."
 4. At the "Configure options" section, click "Next."
 5. At the "Set permissions" section, click "Next."
 6. At the "Review" section, click "Create bucket."
@@ -98,7 +95,7 @@ We will store account credentials needed for the AWS CLI SDK in the file "creden
 1. "AWS_ACCOUNT_ID": In AWS Console, click on your account name at the top right of the screen.  From the dropdown menu, select "My Account." You will be brought to the Account Dashboard, at the top of which is a 12 digit Account ID.
 2. "AWS_ACCESS_KEY_ID": This ID was created with the User in Step 1 where it was called "AccessKeyId."
 3. "AWS_SECRET_ACCESS_KEY": This ID was created with the User in Step 1 where it was called "SecretAccessKey."
-4. "AWS_REGION": This corresponds to the region the S3 bucket created in Step 2 resides in.
+4. "AWS_REGION": This corresponds to the region the S3 bucket created in Step 2 resides in (and the region your bucket containing audio files resides in).
 
 #### User Configuration
 1. "AUDIO_SOURCE_S3BUCKET_NAME": The name of the S3 bucket into which you are placing audio files you want transcribed.
@@ -129,9 +126,10 @@ Running the "clean" script will remove users, roles, policies, Lambda functions,
 CloudWatch has powerful tools to monitor billing and resource usage. You can also setting up "Rules" that will trigger every time an AWS Transcribe job finishes, allowing you closer usage monitoring.
   + [Link to monitoring charges](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/monitor-charges.html)
   + [AWS Transcribe pricing](https://aws.amazon.com/transcribe/pricing/)
+  + [Monitor Amazon Transcribe applications with AWS CloudTrail and CloudWatch Events](https://aws.amazon.com/blogs/machine-learning/monitor-amazon-transcribe-applications-with-aws-cloudtrail-and-amazon-cloudwatch-events/)
 
 #### Use functions in climethods to monitor AWS Transcribe status.
-There are several functions in climethods to get the current state of your WS Transcribe jobs. They leverage the AWS CLI commands below.
+There are several functions in climethods to get the current state of your AWS Transcribe jobs. They leverage the AWS CLI commands below.
 
 List All Transcription Jobs
 ```bash
