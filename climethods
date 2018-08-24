@@ -41,8 +41,8 @@ createTranscribeFunction() {
         --role "${TRANSCRIBE_ROLE_ARN}" \
         --environment "Variables={TRANSCRIPT_DESTINATION_EMAIL=${TRANSCRIPT_DESTINATION_EMAIL},TRANSCRIPT_DESTINATION_S3BUCKET_NAME=${TRANSCRIPT_DESTINATION_S3BUCKET_NAME}}" \
         --handler "transcribeAudio.transcribe" \
-        --timeout 300 \
-        --memory-size 512 \
+        --timeout 30 \
+        --memory-size 128 \
         --zip-file "fileb://build/${TRANSCRIBE_LAMBDA_NAME}.zip" \
         --description "transcribe audio then save and email resulting transcription."
 }
@@ -55,8 +55,8 @@ createExtractFunction() {
         --role "${TRANSCRIBE_ROLE_ARN}" \
         --environment "Variables={TRANSCRIPT_DESTINATION_EMAIL=${TRANSCRIPT_DESTINATION_EMAIL},TRANSCRIPT_DESTINATION_S3BUCKET_NAME=${TRANSCRIPT_DESTINATION_S3BUCKET_NAME},SNS_TOPIC_ARN=${SNS_TOPIC_ARN}}" \
         --handler "extractTranscript.parseJSON" \
-        --timeout 300 \
-        --memory-size 512 \
+        --timeout 30 \
+        --memory-size 128 \
         --zip-file "fileb://build/${EXTRACT_LAMBDA_NAME}.zip" \
         --description "transcribe audio then save and email resulting transcription."
 }
