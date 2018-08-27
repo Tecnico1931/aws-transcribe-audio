@@ -10,7 +10,7 @@ Automatically transcribe audio files added to an AWS S3 bucket and receive notif
   3. [Creating an S3 Bucket](./README.md#3-creating-an-s3-bucket)
   4. [Collecting Account Credentials](./README.md#4-collecting-account-credentials)
   5. [Running Deployment Script](./README.md#5-running-deployment-script)
-  6. [Subscribing to Email Notificaitons](./README.md#6-subscribing-to-email-notifications)
+  6. [Subscribing to Email Notifications](./README.md#6-subscribing-to-email-notifications)
   7. [Cleaning/Reverting Account Changes ](./README.md#7-cleaningreverting-account-changes)
 + [Tips to Monitor Functions](./README.md#tips-to-monitor-functions)
 
