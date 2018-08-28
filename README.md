@@ -15,7 +15,7 @@ Automatically transcribe audio files added to an AWS S3 bucket and receive notif
 + [Tips to Monitor Functions](./README.md#tips-to-monitor-functions)
 
 ## Description
-This software package is a collection of command line tools (cli methods) that create/manage roles, policies, and permissions for AWS Lambda functions. These functions may be used to easily start and format results from the AWS Transcribe service. Use the "deploy" script to build the service on the specified AWS account. Use the "clean" script to remove the service from the account.
+This software package is a collection of command line tools (cli methods) that create/manage roles, policies, and permissions for AWS Lambda functions. These functions may be used to easily start jobs and format results from the AWS Transcribe service. Use the "deploy" script to build the service on the specified AWS account. Use the "clean" script to remove the service from the account.
 
 **For guidance installing/using this functionality, [please follow instructions in the "Deployment Steps" section.](./README.md#deployment-steps)**
 
