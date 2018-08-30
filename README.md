@@ -38,6 +38,9 @@ pip install awscli --upgrade --user
 To copy the project files, clone this git respository.
 ```bash
 git clone https://github.com/couetilc/aws-transcribe-audio.git
+
+# IMPORTANT: Stop git from tracking credentials file.
+git rm --cached aws-transcribe-audio/credentials
 ```
 
 [pip installation guide (pip)](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)

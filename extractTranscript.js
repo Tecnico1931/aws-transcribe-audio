@@ -11,6 +11,7 @@ exports.parseJSON = function (event) {
     const filename = directory.pop();
     directory = directory.join('/');
     let shortname = filename.split('.');
+    shortname.pop(); //pop off random job number.
     const extension = shortname.pop().toLowerCase();
     shortname = shortname.join('.');
 

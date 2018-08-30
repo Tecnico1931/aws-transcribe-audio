@@ -1,3 +1,4 @@
+'use strict'
 const AWS = require('aws-sdk');
 const Scribe = new AWS.TranscribeService({apiVersion: '2017-10-26'});
 
@@ -19,16 +20,21 @@ exports.transcribe = async event => {
         .replace(/\//g, "...")
         .replace(/[^0-9a-zA-Z._-]+/g, "");
 
+    //add random job number, AWS doesn't allow for matching job names.
+    const getRandomInt = (ceiling) => Math.floor(Math.random() * ceiling);
+    const randomizedJobName = transcriptName + '.' + getRandomInt(999999999);
+
     const param = {
         LanguageCode: "en-US",
         Media: {
             MediaFileUri: sourceUri,
         },
         MediaFormat: extension,
-        TranscriptionJobName: transcriptName,
+        TranscriptionJobName: randomizedJobName,
         OutputBucketName: transcriptBucket,
         Settings: {
-            ShowSpeakerLabels: false
+            ShowSpeakerLabels: true,
+            MaxSpeakerLabels: 10
         }
     };
 
