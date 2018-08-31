@@ -3,7 +3,7 @@ source ./credentials
 source ./climethods
 
 echo "deleting transcribeAudio Lambda function"
-deleteTranscriptFunction
+deleteTranscribeFunction
 echo "deleting extractTranscript Lambda function"
 deleteExtractFunction
 echo "deleting Vocabulary for Transcribe service."

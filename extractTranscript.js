@@ -2,6 +2,7 @@
 const AWS = require('aws-sdk');
 const S3 = new AWS.S3();
 const SNS = new AWS.SNS({apiVersion: '2010-12-01'});
+const pt = require('../parseTranscript.js');
 
 exports.parseJSON = function (event) {
     console.log(JSON.stringify(event));
@@ -36,7 +37,11 @@ exports.parseJSON = function (event) {
     }).promise()
     .then(response => {
         const report = JSON.parse(response.Body.toString());
-        const transcript = report.results.transcripts[0].transcript;
+
+        const transcript = pt.parseTranscriptJson(report);
+        const printout = pt.stringifyTranscriptObject(transcript);
+
+        //const transcript = report.results.transcripts[0].transcript;
         const email = `Transcript for ${processed_file}
 
 Processed on: ${processed_on}
@@ -45,7 +50,7 @@ Link to bucket: ${destination_bucket_url}
 Path to JSON: ${filepath}
 Path to text: ${destination_filepath}
 
-${transcript}`;
+${printout}`;
 
         S3.putObject({
             Body: email,

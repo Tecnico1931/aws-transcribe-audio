@@ -1,6 +1,7 @@
 'use strict'
 const AWS = require('aws-sdk');
 const Scribe = new AWS.TranscribeService({apiVersion: '2017-10-26'});
+const pt = require('./parseTranscript.js');
 
 exports.transcribe = async event => {
     console.log(JSON.stringify(event));

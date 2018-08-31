@@ -39,7 +39,7 @@ createTranscribeVocabulary() {
 }
 
 createTranscribeFunction() {
-    zip "build/${TRANSCRIBE_LAMBDA_NAME}.zip" "${TRANSCRIBE_LAMBDA_NAME}.js"
+    zip "build/${TRANSCRIBE_LAMBDA_NAME}.zip" "${TRANSCRIBE_LAMBDA_NAME}.js" "parseTranscript.js"
     aws lambda create-function \
         --function-name "${TRANSCRIBE_LAMBDA_NAME}" \
         --runtime "nodejs8.10" \
@@ -53,7 +53,7 @@ createTranscribeFunction() {
 }
 
 createExtractFunction() {
-    zip "build/${EXTRACT_LAMBDA_NAME}.zip" "${EXTRACT_LAMBDA_NAME}.js"
+    zip "build/${EXTRACT_LAMBDA_NAME}.zip" "${EXTRACT_LAMBDA_NAME}.js" "parseTranscript.js"
     aws lambda create-function \
         --function-name "${EXTRACT_LAMBDA_NAME}" \
         --runtime "nodejs8.10" \
@@ -99,7 +99,7 @@ createTranscriptNotification() {
 }
 
 # Teardown functions
-deleteTranscriptFunction() {
+deleteTranscribeFunction() {
     aws lambda delete-function \
         --function-name "${TRANSCRIBE_LAMBDA_ARN}"
 }
@@ -136,7 +136,7 @@ deletePolicy() {
 }
 
 # Development/status functions
-updateTranscriptFunction() {
+updateTranscribeFunction() {
     zip "build/${TRANSCRIBE_LAMBDA_NAME}.zip" "${TRANSCRIBE_LAMBDA_NAME}.js"
     aws lambda update-function-code \
         --function-name "${TRANSCRIBE_LAMBDA_NAME}" \
