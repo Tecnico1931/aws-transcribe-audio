@@ -126,16 +126,16 @@ Running the "clean" script will remove users, roles, policies, Lambda functions,
 ```
 
 ## Tips to Improve Performance
-#### Add words to your custom vocabulary list.
+### Add words to your custom vocabulary list.
 AWS Transcribe supports the creation of a "Custom Vocabulary," which trains the transcription service to better recognize listed words.  Fill the text file "phrase_list.txt" with words you would like the service to recognize, and the vocabulary will be created when the "deploy" script is run.  Update the vocabulary list by running the "updateTranscribeVocabulary" function in "climethods."
 
-#### Identify the number of speakers in the audio file.
-By specifying the exact number of speakers in an audio clip, AWS Transcribe is better able to label the different speakers.  In the "credentials" file, there is an environment variable called "NUMBER_OF_SPEAKERS" where you can specify this value (The maximum value allowed for the variable is 10).
+### Identify the number of speakers in the audio file.
+By specifying the exact number of speakers in an audio clip, AWS Transcribe is better able to label the different speakers.  In the "credentials" file, there is an environment variable called "NUMBER_OF_SPEAKERS" where you can specify this value (The maximum value allowed for the variable is 10). Once the function is deployed, you can update this value by heading into the AWS Lambda console, scrolling down to the environment variable section, and modifying the variable named NUMBER_OF_SPEAKERS.
 
-#### Edit audio files to remove superfluous noise/speaking.
+### Edit audio files to remove superfluous noise/speaking.
 Cut audio files you would like to transcribe down to the desired sections. Remove unnecessary audio, such as music, introductory segments, and commercials.  This will help AWS Transcribe identify speakers more easily, and improve the quality of the transcription.
 
-#### Implement a spelling corrector.
+### Implement a spelling corrector.
 AWS Transcribe prioritizes pronunciation over spelling. Implement a spelling corrector, or train a natural language processing (NLP) algorithm to correct word spelling and grammar.  There is an interface in the "parseTranscript.js" file to implement this.  The "parseTranscriptJson" function returns a list of words uttered by each speaker in a simple format that can be corrected before being passed to the "stringifyTranscriptObject" which produces the final transcript.
 
 ## Tips to Monitor Functions
