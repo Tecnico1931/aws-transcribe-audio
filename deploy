@@ -2,6 +2,8 @@
 source ./credentials
 source ./climethods
 
+echo "creating custom vocabulary for transcribe service"
+createTranscribeVocabulary
 echo "creating IAM Role that allows Lambda to execute functions"
 createRole
 echo "creating IAM Policy defining access to AWS services"

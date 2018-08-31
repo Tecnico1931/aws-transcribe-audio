@@ -1,29 +1,7 @@
-const fs = require('fs');
-
-cleanTranscript('./tests/2018...08...copy_405_TMNR_Episode.mp3.376764984.json', 'r')
-    .then(transcript => console.log(transcript))
-    .catch(error => console.log(error));
-
-async function cleanTranscript(filename) {
-    try {
-        const jsonbuffer = fs.readFileSync(filename , {encoding: 'utf8', flag: 'r'});
-        const json = JSON.parse(jsonbuffer);
-        
-        const transcript = parseTranscriptJson(json);
-        const printout = stringifyTranscriptObject(transcript);
-
-//        return transcript;
-        return printout;
-    } catch (error) {
-        console.log('error dude');
-        throw error;
-        return null;
-    }
-}
-
 /* AWS Transcript JSON format 
  *
- *Object *  accountId:
+ *Object 
+ *  accountId:
  *  jobName:
  *  status:
  *  results:
@@ -78,7 +56,7 @@ function parseTranscriptJson(json) {
             word = words.next();
         }
 
-        //Don't keep phrases with no words.
+        //Don't keep phrases without words.
         if (phrase.words.length > 0) {
             last_phrase = transcript.phrases.pop();
 
@@ -141,3 +119,7 @@ function prettifyTime(total_seconds) {
     return `${hours}:${minutes}:${seconds}`;
 }
 
+module.exports = {
+    parseTranscriptJson: parseTranscriptJson,
+    stringifyTranscriptObject: stringifyTranscriptObject
+}

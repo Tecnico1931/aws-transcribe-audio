@@ -24,7 +24,13 @@ exports.transcribe = async event => {
     const getRandomInt = (ceiling) => Math.floor(Math.random() * ceiling);
     const randomizedJobName = transcriptName + '.' + getRandomInt(999999999);
 
-    const param = {
+    const vocab_param = {
+        LanguageCode: 'en-US',
+        Phrases: [],
+        VocabularyName: ''
+    }
+
+    const scribe_param = {
         LanguageCode: "en-US",
         Media: {
             MediaFileUri: sourceUri,
@@ -34,13 +40,13 @@ exports.transcribe = async event => {
         OutputBucketName: transcriptBucket,
         Settings: {
             ShowSpeakerLabels: true,
-            MaxSpeakerLabels: 10
+            MaxSpeakerLabels: process.env.NUMBER_OF_SPEAKERS
         }
     };
 
-    console.log(JSON.stringify(param));
+    console.log(JSON.stringify(scribe_param));
 
-    return Scribe.startTranscriptionJob(param).promise()
+    return Scribe.startTranscriptionJob(scribe_param).promise()
         .then(data => {
             console.log(JSON.stringify(data));
         })

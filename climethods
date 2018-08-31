@@ -33,13 +33,18 @@ subscribeSnsTopic() {
         --notification-endpoint "${TRANSCRIPT_DESTINATION_EMAIL}"
 }
 
+createTranscribeVocabulary() {
+    aws transcribe create-vocabulary \
+        --cli-input-json "{ \"VocabularyName\": \"${VOCABULARY_NAME}\", \"LanguageCode\": \"en-US\", \"Phrases\": [ $(cat phrase_list.txt) ] }"
+}
+
 createTranscribeFunction() {
     zip "build/${TRANSCRIBE_LAMBDA_NAME}.zip" "${TRANSCRIBE_LAMBDA_NAME}.js"
     aws lambda create-function \
         --function-name "${TRANSCRIBE_LAMBDA_NAME}" \
         --runtime "nodejs8.10" \
         --role "${TRANSCRIBE_ROLE_ARN}" \
-        --environment "Variables={TRANSCRIPT_DESTINATION_EMAIL=${TRANSCRIPT_DESTINATION_EMAIL},TRANSCRIPT_DESTINATION_S3BUCKET_NAME=${TRANSCRIPT_DESTINATION_S3BUCKET_NAME}}" \
+        --environment "Variables={TRANSCRIPT_DESTINATION_EMAIL=${TRANSCRIPT_DESTINATION_EMAIL},TRANSCRIPT_DESTINATION_S3BUCKET_NAME=${TRANSCRIPT_DESTINATION_S3BUCKET_NAME},NUMBER_OF_SPEAKERS=${NUMBER_OF_SPEAKERS}}" \
         --handler "transcribeAudio.transcribe" \
         --timeout 30 \
         --memory-size 128 \
@@ -102,6 +107,11 @@ deleteTranscriptFunction() {
 deleteExtractFunction() {
     aws lambda delete-function \
         --function-name "${EXTRACT_LAMBDA_ARN}"
+}
+
+deleteTranscribeVocabulary() {
+    aws transcribe delete-vocabulary \
+        --vocabulary-name "scribevocabulary"
 }
 
 deleteTopic() {

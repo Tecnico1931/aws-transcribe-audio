@@ -6,6 +6,8 @@ echo "deleting transcribeAudio Lambda function"
 deleteTranscriptFunction
 echo "deleting extractTranscript Lambda function"
 deleteExtractFunction
+echo "deleting Vocabulary for Transcribe service."
+deleteTranscribeVocabulary
 echo "deleting SNS Topic"
 deleteTopic
 echo "detaching IAM Policy from Role"
