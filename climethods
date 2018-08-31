@@ -44,7 +44,7 @@ createTranscribeFunction() {
         --function-name "${TRANSCRIBE_LAMBDA_NAME}" \
         --runtime "nodejs8.10" \
         --role "${TRANSCRIBE_ROLE_ARN}" \
-        --environment "Variables={TRANSCRIPT_DESTINATION_EMAIL=${TRANSCRIPT_DESTINATION_EMAIL},TRANSCRIPT_DESTINATION_S3BUCKET_NAME=${TRANSCRIPT_DESTINATION_S3BUCKET_NAME},NUMBER_OF_SPEAKERS=${NUMBER_OF_SPEAKERS}}" \
+        --environment "Variables={TRANSCRIPT_DESTINATION_EMAIL=${TRANSCRIPT_DESTINATION_EMAIL},TRANSCRIPT_DESTINATION_S3BUCKET_NAME=${TRANSCRIPT_DESTINATION_S3BUCKET_NAME},NUMBER_OF_SPEAKERS=${NUMBER_OF_SPEAKERS},VOCABULARY_NAME=${VOCABULARY_NAME}}" \
         --handler "transcribeAudio.transcribe" \
         --timeout 30 \
         --memory-size 128 \
@@ -148,6 +148,11 @@ updateExtractFunction() {
     aws lambda update-function-code \
         --function-name "${EXTRACT_LAMBDA_NAME}" \
         --zip-file "fileb://build/${EXTRACT_LAMBDA_NAME}.zip"
+}
+
+updateTranscribeVocabulary() {
+    aws transcribe update-vocabulary \
+        --cli-input-json "{ \"VocabularyName\": \"${VOCABULARY_NAME}\", \"LanguageCode\": \"en-US\", \"Phrases\": [ $(cat phrase_list.txt) ] }"
 }
 
 listAllTranscriptionJobs() {

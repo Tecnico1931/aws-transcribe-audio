@@ -40,7 +40,8 @@ exports.transcribe = async event => {
         OutputBucketName: transcriptBucket,
         Settings: {
             ShowSpeakerLabels: true,
-            MaxSpeakerLabels: process.env.NUMBER_OF_SPEAKERS
+            MaxSpeakerLabels: process.env.NUMBER_OF_SPEAKERS,
+            VocabularyName: process.env.VOCABULARY_NAME
         }
     };
 
