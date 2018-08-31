@@ -2,7 +2,7 @@
 const AWS = require('aws-sdk');
 const S3 = new AWS.S3();
 const SNS = new AWS.SNS({apiVersion: '2010-12-01'});
-const pt = require('../parseTranscript.js');
+const pt = require('./parseTranscript.js');
 
 exports.parseJSON = function (event) {
     console.log(JSON.stringify(event));
@@ -38,7 +38,9 @@ exports.parseJSON = function (event) {
     .then(response => {
         const report = JSON.parse(response.Body.toString());
 
-        const transcript = pt.parseTranscriptJson(report);
+        //Speller represents a spelling correction function.
+        const speller = word => word;
+        const transcript = pt.parseTranscriptJson(report, speller);
         const printout = pt.stringifyTranscriptObject(transcript);
 
         //const transcript = report.results.transcripts[0].transcript;

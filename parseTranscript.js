@@ -26,7 +26,7 @@
  *          type:
  * */
 
-function parseTranscriptJson(json) {
+function parseTranscriptJson(json, speller) {
     const speakers = json.results.speaker_labels.segments[Symbol.iterator]();
     const words = json.results.items[Symbol.iterator]();
 
@@ -48,6 +48,12 @@ function parseTranscriptJson(json) {
         };
 
         while (!word.done && isSpokenBy(speaker, word.value)) {
+            //Custom spelling correction on non-punctuation.
+            let word_content = word.value.alternatives[0].content;
+            if (word.value.type !== 'punctuation') {
+                word_content = speller(word_content);
+            }
+
             phrase.words.push({
                 content: word.value.alternatives[0].content,
                 type: word.value.type
